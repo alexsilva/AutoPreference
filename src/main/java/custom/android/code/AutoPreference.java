@@ -53,7 +53,9 @@ public class AutoPreference {
             String keyName = genKeyName(getPreferenceStore(field));
             try {
                 Method method = preferenceClass.getDeclaredMethod(getMethodName, String.class);
+
                 Object fieldValue = method.invoke(sharedPrefs, keyName);
+
                 if (fieldValue != null) {  // update field
                     field.set(object, fieldValue);
                 }
@@ -113,14 +115,10 @@ public class AutoPreference {
                 try {
                     Object value = field.get(object);
 
-                    if (debug) Log.d(TAG, "Key: " + keyName + " Method: " + putMethodName);
-
                     Method method = editorClass.getDeclaredMethod(putMethodName,
                             String.class, fieldType);
+
                     method.invoke(_editor, keyName, value);
-
-                    if (debug) Log.d(TAG, "Method: " + putMethodName);
-
                 } catch (IllegalAccessException e) {
                     if (debug) Log.d(TAG, "-", e);
 

@@ -43,7 +43,7 @@ public class AutoPreference {
     }
 
     /** restores the state variables */
-    public void remember() {
+    public void restore() {
         assertParserCall(object == null);
         for (Field field : mFields) {
 

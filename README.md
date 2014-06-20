@@ -23,5 +23,12 @@ public class myFragment extends Fragment implements
         autoPreference = new AutoPreference(getActivity(), TAG, Context.MODE_PRIVATE);
         autoPreference.parser(this);
         autoPreference.restore();  // update all 'PreferenceStore'
+    }
+        
+    @Override
+    public void onStop() {
+        autoPreference.commit(); // save all 'PreferenceStore'
+        super.onStop();
+    }
 }
 ```

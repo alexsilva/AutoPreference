@@ -45,8 +45,27 @@ public class AutoPreference {
     /** restores the state variables */
     public void restore() {
         assertParserCall(object == null);
-        for (Field field : mFields) {
 
+        Class preferenceClass = SharedPreferences.class;
+
+        for (Field field : mFields) {
+            String getMethodName = genMethodName("get", field.getType());
+            String keyName = genKeyName(getPreferenceStore(field));
+            try {
+                Method method = preferenceClass.getDeclaredMethod(getMethodName, String.class);
+                Object fieldValue = method.invoke(sharedPrefs, keyName);
+                if (fieldValue != null) {  // update field
+                    field.set(object, fieldValue);
+                }
+            } catch (IllegalAccessException e) {
+                if (debug) Log.d(TAG, "-", e);
+
+            } catch (InvocationTargetException e) {
+                if (debug) Log.d(TAG, "-", e);
+
+            } catch (NoSuchMethodException e) {
+                if (debug) Log.d(TAG, "-", e);
+            }
         }
     }
 
@@ -57,10 +76,19 @@ public class AutoPreference {
         return editor;
     }
 
+    protected String genMethodName(String prefix, Class fieldType) {
+        return prefix + prepareTypeName(fieldType.getSimpleName());
+    }
+
+    private String genKeyName(PreferenceStore preferenceStore) {
+        return namespace + ":" + preferenceStore.name();
+    }
+
     protected String prepareTypeName(String string) {
         return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
+    /** Name passed as a parameter for annotations to be used as a key field */
     protected PreferenceStore getPreferenceStore(Field field) {
         return field.getAnnotation(PreferenceStore.class);
     }
@@ -73,23 +101,25 @@ public class AutoPreference {
     /** Saves the current state of the object */
     public void commit() {
         assertParserCall(object == null);
+
         SharedPreferences.Editor _editor = getEdit();
         Class editorClass = SharedPreferences.Editor.class;
+
         try {
             for (Field field : mFields) {
+                Class fieldType = field.getType();
+                String putMethodName = genMethodName("put", fieldType);
+                String keyName = genKeyName(getPreferenceStore(field));
                 try {
-                    Class fieldType = field.getType();
                     Object value = field.get(object);
 
-                    String methodName = "put" + prepareTypeName(fieldType.getSimpleName());
-                    String keyName = namespace + ":" + getPreferenceStore(field).name();
+                    if (debug) Log.d(TAG, "Key: " + keyName + " Method: " + putMethodName);
 
-                    if (debug) Log.d(TAG, "Key: " + keyName + " Method: " + methodName);
-
-                    Method method = editorClass.getDeclaredMethod(methodName, String.class, fieldType);
+                    Method method = editorClass.getDeclaredMethod(putMethodName,
+                            String.class, fieldType);
                     method.invoke(_editor, keyName, value);
 
-                    if (debug) Log.d(TAG, "Method: " + methodName);
+                    if (debug) Log.d(TAG, "Method: " + putMethodName);
 
                 } catch (IllegalAccessException e) {
                     if (debug) Log.d(TAG, "-", e);

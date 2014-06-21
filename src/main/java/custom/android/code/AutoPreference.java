@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AutoPreference {
     public static final String TAG = AutoPreference.class.getSimpleName();
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     String namespace;
     SharedPreferences sharedPrefs;

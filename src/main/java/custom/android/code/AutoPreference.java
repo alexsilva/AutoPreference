@@ -49,13 +49,16 @@ public class AutoPreference {
         Class preferenceClass = SharedPreferences.class;
 
         for (Field field : mFields) {
-            Class fieldType = field.getType();
+            Class<?> fieldType = field.getType();
             String getMethodName = genMethodName("get", fieldType);
             String keyName = genKeyName(getPreferenceStore(field));
             try {
-                Method method = preferenceClass.getDeclaredMethod(getMethodName, fieldType);
+                Method method = preferenceClass.getDeclaredMethod(getMethodName,
+                        String.class, fieldType);
 
-                Object fieldValue = method.invoke(sharedPrefs, keyName);
+                Object value = field.get(object); // get default field value.
+
+                Object fieldValue = method.invoke(sharedPrefs, keyName, value);
 
                 if (fieldValue != null) {  // update field
                     field.set(object, fieldValue);

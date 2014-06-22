@@ -64,13 +64,13 @@ public class AutoPreference {
                     field.set(object, fieldValue);
                 }
             } catch (IllegalAccessException e) {
-                if (debug) Log.d(TAG, "-", e);
+                if (debug) Log.d(TAG, "- " + keyName, e);
 
             } catch (InvocationTargetException e) {
-                if (debug) Log.d(TAG, "-", e);
+                if (debug) Log.d(TAG, "- " + keyName, e);
 
             } catch (NoSuchMethodException e) {
-                if (debug) Log.d(TAG, "-", e);
+                if (debug) Log.d(TAG, "- " + keyName, e);
             }
         }
     }
@@ -124,13 +124,13 @@ public class AutoPreference {
 
                     method.invoke(_editor, keyName, value);
                 } catch (IllegalAccessException e) {
-                    if (debug) Log.d(TAG, "-", e);
+                    if (debug) Log.d(TAG, "- " + keyName, e);
 
                 } catch (NoSuchMethodException e) {
-                    if (debug) Log.d(TAG, "-", e);
+                    if (debug) Log.d(TAG, "- " + keyName, e);
 
                 } catch (InvocationTargetException e) {
-                    if (debug) Log.d(TAG, "-", e);
+                    if (debug) Log.d(TAG, "- " + keyName, e);
                 }
             }
         } finally {

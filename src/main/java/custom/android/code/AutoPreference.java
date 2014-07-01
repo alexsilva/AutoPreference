@@ -105,36 +105,51 @@ public class AutoPreference {
     }
 
     /** Saves the current state of the object */
-    public void commit() {
+    private void save(SharedPreferences.Editor _editor) {
         assertParserCall(object == null);
 
-        SharedPreferences.Editor _editor = getEdit();
         Class editorClass = SharedPreferences.Editor.class;
 
-        try {
-            for (Field field : mFields) {
-                Class fieldType = field.getType();
-                String putMethodName = genMethodName("put", fieldType);
-                String keyName = genKeyName(getPreferenceStore(field));
-                try {
-                    Object value = field.get(object);
+        for (Field field : mFields) {
+            Class fieldType = field.getType();
+            String putMethodName = genMethodName("put", fieldType);
+            String keyName = genKeyName(getPreferenceStore(field));
+            try {
+                Object value = field.get(object);
 
-                    Method method = editorClass.getDeclaredMethod(putMethodName,
-                            String.class, fieldType);
+                Method method = editorClass.getDeclaredMethod(putMethodName,
+                        String.class, fieldType);
 
-                    method.invoke(_editor, keyName, value);
-                } catch (IllegalAccessException e) {
-                    if (debug) Log.d(TAG, "- " + keyName, e);
+                method.invoke(_editor, keyName, value);
+            } catch (IllegalAccessException e) {
+                if (debug) Log.d(TAG, "- " + keyName, e);
 
-                } catch (NoSuchMethodException e) {
-                    if (debug) Log.d(TAG, "- " + keyName, e);
+            } catch (NoSuchMethodException e) {
+                if (debug) Log.d(TAG, "- " + keyName, e);
 
-                } catch (InvocationTargetException e) {
-                    if (debug) Log.d(TAG, "- " + keyName, e);
-                }
+            } catch (InvocationTargetException e) {
+                if (debug) Log.d(TAG, "- " + keyName, e);
             }
+        }
+    }
+
+    /** sync commit */
+    public void commit() {
+        SharedPreferences.Editor editor = getEdit();
+        try {
+            save(editor);
         } finally {
-            _editor.commit();
+            editor.commit();
+        }
+    }
+
+    /** async commit */
+    public void apply() {
+        SharedPreferences.Editor editor = getEdit();
+        try {
+            save(editor);
+        } finally {
+            editor.apply();
         }
     }
 }

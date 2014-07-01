@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 'android-L'
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 20
+    buildToolsVersion '19.1'
     defaultConfig {
         applicationId 'custom.android.code'
         minSdkVersion 9
